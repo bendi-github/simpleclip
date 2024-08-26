@@ -360,7 +360,9 @@ in GNU Emacs 24.1 or higher."
           ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
            (with-output-to-string
              (with-current-buffer standard-output
-               (call-process "xsel" nil t nil "--clipboard" "--output"))))
+               (if (eq window-system 'pgtk)
+               (call-process "wl-paste" nil t nil)
+               (call-process "xsel" nil t nil "--clipboard" "--output")))))
           (t
            (error "Clipboard support not available")))
        (error
@@ -400,7 +402,10 @@ in GNU Emacs 24.1 or higher."
            ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
             (with-temp-buffer
               (insert str-val)
-              (call-process-region (point-min) (point-max) "xsel" nil nil nil "--clipboard" "--input")))
+              (if (eq window-system 'pgtk)
+                  (call-process-region (point-min) (point-max) "wl-copy"
+                                       nil nil nil)
+              (call-process-region (point-min) (point-max) "xsel" nil nil nil "--clipboard" "--input"))))
            (t
             (error "Clipboard support not available")))
        (error
